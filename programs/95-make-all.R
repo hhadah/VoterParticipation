@@ -7,8 +7,8 @@ rm(list = ls())
 
 ### GiT directories
 git_mdir <- "/Users/hhadah/Documents/GiT/VoterParticipation"
-tables_wd <- paste0(git_mdir,"/outputs/tables")
-figures_wd <- paste0(git_mdir,"/outputs/figures")
+tables_wd <- paste0(git_mdir,"/output/tables")
+figures_wd <- paste0(git_mdir,"/output/figures")
 raw_wd <- paste0(git_mdir,"/data/raw")
 datasets_wd <- paste0(git_mdir,"/data/datasets")
 

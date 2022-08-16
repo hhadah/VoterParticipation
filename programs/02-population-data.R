@@ -35,17 +35,19 @@ library(srvyr)
 options(survey.lonely.psu = "adjust")
 options(na.action="na.pass")
 
-CPS_wt <- subset(CPS, YEAR >= 1976) %>%
+CPS_wt <- subset(CPS, YEAR %in% seq(1978,2018, 4)) %>%
   filter(!is.na(VOSUPPWT)) %>% 
   as_survey(weights = VOSUPPWT)
 
 CPS_voting <- CPS_wt |> 
+  filter(!is.na(Age_group)) |> 
   group_by(YEAR, Age_group) |> 
   summarise(Voted = survey_mean(Voted, na.rm = T))
 
-CPS_voting <- CPS |> 
-  group_by(YEAR, Age_group) |> 
-  summarise(Voted = weighted.mean(Voted, VOSUPPWT, na.rm = T))
+# CPS_voting <- CPS |> 
+#   group_by(YEAR, Age_group) |> 
+#   filter(!is.na(Age_group)) |> 
+#   summarise(Voted = weighted.mean(Voted, VOSUPPWT, na.rm = T))
 
 # graph
 
@@ -54,17 +56,17 @@ p1 <- ggplot(CPS_voting, aes(YEAR, Voted)) +
   stat_summary(geom = "line", aes(color = factor(Age_group))) +
   labs(x = "Year", y = "Share of Electorate",
        caption = "Data source: The Current Population Survey (CPS) Voter Supplement.") +
-  ggtitle("In Your Face!") +
+  ggtitle("Age Groups Share of the Electorate: By Midterm Election") +
   scale_color_manual(values = cbbPalette,
                      # labels = c("New England", "M. Atlantic", "E. N. Central",
                      #            "W. N. Central", "S. Atlantic", "E. S. Central",
                      #            "W. S. Central", "Mountain", "Pacific"),
-                     name = "Age group")
-  # scale_x_continuous(limits = c(1977,1996), breaks = c(1977, 1982, 1985, 1988, 1990, 1992, 1994, 1996)) +
+                     name = "Age group") +
+  scale_x_continuous(limits = c(1978,2018), breaks = seq(1978,2018, 2))
   # scale_y_continuous(limits = c(-0.65,0.65), breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6)) +
   # theme(axis.text.x = element_text(angle = 30, hjust = 0.5, vjust = 0.5))
 p1
 ggsave(paste0(figures_wd,"/Voter_part.png"), width = 10, height = 4, units = "in")
 
 # Save data
-write_csv(CPS, file.path(datasets,"VotingData.csv"))
+write_csv(CPS, file.path(datasets_wd,"VotingData.csv"))
